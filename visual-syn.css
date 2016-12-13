@@ -1,0 +1,31 @@
+.syn-vis.syn {
+  border-left: 1px dotted rgba(0, 0, 0, 0.3);
+  border-top: 1px dotted rgba(0, 0, 0, 0.3);
+  border-bottom: 1px dotted rgba(0, 0, 0, 0.3);
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+.syn-vis.syn:not(:hover) {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.syn-vis.syn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.syn-vis.code {
+  font-family: monospace;
+  padding: 5px;
+  border: 1px solid #999;
+  background-color: #EEE;
+}
+
+.syn-vis.prop {
+  margin-top: 5px;
+  margin-left: 10px;
+}
+
+.syn-vis.prop-label {
+  font-weight: 800;
+}
