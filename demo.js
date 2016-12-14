@@ -16,7 +16,7 @@ const parser = Syn.makeParser({
 
     FunctionCall: syn => {
       syn.data._visual = {
-        identifier: 'syn',
+        identifierSyn: 'syn',
         argSyns: 'synArray'
       }
 
