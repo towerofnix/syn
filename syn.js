@@ -1,3 +1,15 @@
+class SynError extends Error {
+  constructor(syn, msg) {
+    let errorMsg = `Failed in ${syn.type}`
+    if (msg) {
+      errorMsg += ` (${msg})`
+    }
+    super(errorMsg)
+
+    this.syn = syn
+  }
+}
+
 class Syn {
   constructor(type, code, i, lang) {
     this.type = type
@@ -27,6 +39,40 @@ class Syn {
     newSyn.synCode = newSyn.code.slice(newSyn.startI, newSyn.endI)
 
     return newSyn
+  }
+
+  parsePastString(str) {
+    if (this.code.slice(this.i, this.i + str.length) !== str) {
+      throw this.failed(`Couldn\'t parse past string "${str}"`)
+    }
+
+    this.i += str.length
+  }
+
+  failed(msg) {
+    return new SynError(this, msg ? msg : '')
+  }
+
+  tryToParsePast(...tries) {
+    let syn
+
+    for (let attempt of tries) {
+      let syn
+
+      try {
+        syn = this.parsePast(attempt)
+      } catch(e) {
+        console.log(e.message)
+      }
+
+      if (syn) {
+        return syn
+      }
+    }
+
+    if (!syn) {
+      throw this.failed('tryToParsePast did not find a successful syn')
+    }
   }
 
   static makeParser(lang) {

@@ -1,13 +1,31 @@
+const isValidIdentifierChar = function(char) {
+  return char !== ' ' && char !== '(' && char !== ')'
+}
+
+const isWhitespaceChar = function(char) {
+  return char === ' ' || char === '\n'
+}
+
 const parser = Syn.makeParser({
   rootSyn: 'Program',
 
   syns: {
+    Whitespace: syn => {
+      while (syn.code[syn.i] && isWhitespaceChar(syn.code[syn.i])) {
+        syn.i++
+      }
+    },
+
     Identifier: syn => {
       syn.data._visual = {
         identifierString: 'string'
       }
 
-      while (syn.code[syn.i] && syn.code[syn.i] !== '(') {
+      if (!isValidIdentifierChar(syn.code[syn.i])) {
+        throw syn.failed('Identifier did not start with a valid character')
+      }
+
+      while (syn.code[syn.i] && isValidIdentifierChar(syn.code[syn.i])) {
         syn.i++
       }
 
@@ -22,20 +40,29 @@ const parser = Syn.makeParser({
 
       syn.data.identifierSyn = syn.parsePast('Identifier')
 
-      syn.i++  // Move past opening function parenthesis
+      syn.parsePastString('(')
+
+      syn.parsePast('Whitespace')
 
       syn.data.argSyns = []
 
-      const argSyn = syn.parsePast('Expression')
-      syn.data.argSyns.push(argSyn)
+      while (syn.code[syn.i] && syn.code[syn.i] !== ')') {
+        const argSyn = syn.parsePast('Expression')
+        syn.data.argSyns.push(argSyn)
+        syn.parsePast('Whitespace')
+      }
 
-      syn.i++  // Move past closing function parenthesis
+      syn.parsePastString(')')
     },
 
     Expression: syn => {
       let valueSyn
 
-      valueSyn = syn.parsePast('Identifier')
+      syn.data._visual = {
+        valueSyn: 'syn'
+      }
+
+      valueSyn = syn.tryToParsePast('FunctionCall', 'Identifier')
 
       syn.data.valueSyn = valueSyn
     },
@@ -55,7 +82,7 @@ const parser = Syn.makeParser({
   }
 })
 
-const programSyn = parser('Foo(bar)')
+const programSyn = parser('bar(baz foo(kaz))')
 console.log(programSyn)
 
 document.getElementById('target').appendChild(visualSyn(programSyn))
