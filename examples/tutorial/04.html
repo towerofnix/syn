@@ -1,0 +1,74 @@
+<script src="../../syn.js"></script>
+
+<link rel="stylesheet" href="../../visual-syn.css">
+<script src="../../visual-syn.js"></script>
+
+<div id="target"></div>
+
+<script src="../util/console-log-in-document.js"></script>
+
+<script>
+  
+const isValidIdentifierChar = function(char) {
+  // *************
+  if (char === ' ' || char === '=') {
+    return false
+  }
+  // *************
+
+  return true
+}
+
+const parser = Syn.makeParser({
+  rootSyn: 'Program',
+
+  syns: {
+    Identifier: syn => {
+      syn.data._visual = {
+        string: 'string'
+      }
+
+      while (syn.code[syn.i] && isValidIdentifierChar(syn.code[syn.i])) {
+        syn.i++
+      }
+
+      syn.data.string = syn.code.slice(syn.startI, syn.i)
+    },
+
+    // *************
+    VariableSet: syn => {
+      syn.data._visual = {
+        identifier: 'syn',
+        value: 'syn'
+      }
+
+      syn.data.identifier = syn.parsePast('Identifier')
+      syn.parsePastString('=')
+      syn.data.value = syn.parsePast('Identifier')
+    },
+    // *************
+
+    Program: syn => {
+      syn.data._visual = {
+        statements: 'synArray'  // <-------
+      }
+
+      syn.data.statements = []  // <-------
+
+      while (syn.code[syn.i]) {
+        // *************
+        const statement = syn.tryToParsePast('VariableSet', 'Identifier')
+        syn.data.statements.push(statement)
+        // *************
+
+        syn.parsePastString(' ')
+      }
+    }
+  }
+})
+
+const program = parser('Kaz x=y ')
+console.log(program)
+document.getElementById('target').appendChild(visualSyn(program))
+
+</script>

@@ -56,15 +56,23 @@ const parser = Syn.makeParser({
     },
 
     Expression: syn => {
-      let valueSyn
-
       syn.data._visual = {
         valueSyn: 'syn'
       }
 
-      valueSyn = syn.tryToParsePast('FunctionCall', 'Identifier')
+      const valueSyn = syn.tryToParsePast('FunctionCall', 'Identifier')
 
       syn.data.valueSyn = valueSyn
+    },
+
+    Statement: syn => {
+      syn.data._visual = {
+        statementSyn: 'syn'
+      }
+
+      const statementSyn = syn.tryToParsePast('FunctionCall')
+
+      syn.data.statementSyn = statementSyn
     },
 
     Program: syn => {
@@ -75,7 +83,7 @@ const parser = Syn.makeParser({
       syn.data.statements = []
 
       while (syn.i < syn.code.length) {
-        const statementSyn = syn.parsePast('FunctionCall')
+        const statementSyn = syn.parsePast('Statement')
         syn.data.statements.push(statementSyn)
       }
     }
@@ -83,8 +91,7 @@ const parser = Syn.makeParser({
 })
 
 const programSyn = parser(
-  'bar(baz foo(kaz))' +
-  '\nbar(baz(baz(baz(kaj))))'
+  'x(hi)'
 )
 console.log(programSyn)
 

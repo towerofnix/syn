@@ -21,12 +21,14 @@ const shortCode = function(code) {
 function visualSyn(syn, meta={}) {
   //console.log('Visuaizing a ' + syn.type, Object.keys(meta))
 
+  const code = syn.containedCode
+
   const synEl = document.createElement('div')
   synEl.classList.add('syn-vis', 'syn')
 
   synEl.title = syn.type
 
-  synEl.title += '\n\nCode: ' + shortCode(syn.synCode)
+  synEl.title += '\n\nCode: ' + shortCode(code)
 
   if (meta.ancesterLines) {
     synEl.title += '\n\nStack: -------------\n'
@@ -41,7 +43,7 @@ function visualSyn(syn, meta={}) {
   const codeEl = document.createElement('div')
   codeEl.classList.add('syn-vis', 'code')
   codeEl.appendChild(document.createTextNode(
-    `(${syn.startI} -> ${syn.endI}) ${syn.synCode}`
+    `(${syn.startI} -> ${syn.endI}) ${code}`
   ))
   synEl.appendChild(codeEl)
 
@@ -55,6 +57,14 @@ function visualSyn(syn, meta={}) {
       const value = syn.data[prop]
       const displayType = propConfig[prop]
 
+      if (typeof value === 'undefined') {
+        console.warn(
+          `visualSyn didn't get a value for property ${prop} in a ` +
+          `${syn.type} syn`
+        )
+        continue
+      }
+
       const propEl = document.createElement('div')
       propEl.classList.add('syn-vis', 'prop')
 
@@ -64,23 +74,38 @@ function visualSyn(syn, meta={}) {
       propEl.appendChild(propLabelEl)
 
       if (displayType === 'synArray') {
-        propLabelEl.appendChild(document.createTextNode(' (Syn array)'))
-        propEl.classList.add('syn-array')
+          propLabelEl.appendChild(document.createTextNode(' (Syn array)'))
+          propEl.classList.add('syn-array')
 
-        for (let childSyn of value) {
-          propEl.appendChild(visualSyn(childSyn, Object.assign({}, meta, {
-            ancesterLines: (meta.ancesterLines || []).concat([
-              `${syn.type} -> ${prop} (array #${value.indexOf(childSyn)})`
-            ])
-          })))
+        if (Array.isArray(value)) {
+          for (let childSyn of value) {
+            propEl.appendChild(visualSyn(childSyn, Object.assign({}, meta, {
+              ancesterLines: (meta.ancesterLines || []).concat([
+                `${syn.type} -> ${prop} (array #${value.indexOf(childSyn)})`
+              ])
+            })))
+          }
+        } else {
+          console.warn(
+            `visualSyn didn't get an array for property ${prop} (synArray)` +
+            ` in a ${syn.type} syn`
+          )
         }
       } else if (displayType === 'syn') {
         propLabelEl.appendChild(document.createTextNode(' (Syn)'))
-        propEl.appendChild(visualSyn(value, Object.assign({}, meta, {
-          ancesterLines: (meta.ancesterLines || []).concat([
-            `${syn.type} -> ${prop}`
-          ])
-        })))
+
+        if (value instanceof Syn) {
+          propEl.appendChild(visualSyn(value, Object.assign({}, meta, {
+            ancesterLines: (meta.ancesterLines || []).concat([
+              `${syn.type} -> ${prop}`
+            ])
+          })))
+        } else {
+          console.warn(
+            `visualSyn didn't get a syn for property ${prop} (syn) in a` +
+            ` ${syn.type} syn`
+          )
+        }
       } else if (displayType === 'string') {
         propEl.appendChild(document.createTextNode(`: ${value}`))
       }

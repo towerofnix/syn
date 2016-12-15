@@ -36,7 +36,7 @@ class Syn {
 
     this.i = newSyn.i
 
-    newSyn.synCode = newSyn.code.slice(newSyn.startI, newSyn.endI)
+    newSyn.containedCode = newSyn.code.slice(newSyn.startI, newSyn.endI)
 
     return newSyn
   }
@@ -57,12 +57,21 @@ class Syn {
     let syn
 
     for (let attempt of tries) {
+      if (!this.lang.syns.hasOwnProperty(attempt)) {
+        throw new Error(
+          `tryToParsePast was given syn type ${attempt}, which has no` +
+          ' definition'
+        )
+      }
+    }
+
+    for (let attempt of tries) {
       let syn
 
       try {
         syn = this.parsePast(attempt)
       } catch(e) {
-        console.log('(Try to parse past) ' + e.message)
+        console.log('(tryToParsePast) ' + e.message)
       }
 
       if (syn) {

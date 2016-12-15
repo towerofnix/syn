@@ -1,0 +1,33 @@
+Check out the console!
+
+<script src="../util/console-log-in-document.js"></script>
+
+<script src="../../syn.js"></script>
+
+<script>
+
+const isValidIdentifierChar = function(char) {
+  if (char === ' ') {
+    return false
+  }
+
+  return true
+}
+
+const parser = Syn.makeParser({
+  rootSyn: 'Identifier',
+
+  syns: {
+    Identifier: syn => {
+      while (syn.code[syn.i] && isValidIdentifierChar(syn.code[syn.i])) {
+        syn.i++
+      }
+
+      syn.data.string = syn.code.slice(syn.startI, syn.i)
+    }
+  }
+})
+
+console.log(parser('abc'))
+
+</script>
