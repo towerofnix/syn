@@ -121,5 +121,5 @@
   }
 
   install(Syn, 'Syn')
-  install(SynError, 'SynError')
+  //install(SynError, 'SynError')
 })()
