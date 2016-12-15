@@ -18,7 +18,7 @@ const parser = Syn.makeParser({
 
     Identifier: syn => {
       syn.data._visual = {
-        identifierString: 'string'
+        string: 'string'
       }
 
       if (!isValidIdentifierChar(syn.code[syn.i])) {
@@ -29,26 +29,26 @@ const parser = Syn.makeParser({
         syn.i++
       }
 
-      syn.data.identifierString = syn.code.slice(syn.startI, syn.i)
+      syn.data.string = syn.code.slice(syn.startI, syn.i)
     },
 
     FunctionCall: syn => {
       syn.data._visual = {
-        identifierSyn: 'syn',
-        argSyns: 'synArray'
+        identifier: 'syn',
+        args: 'synArray'
       }
 
-      syn.data.identifierSyn = syn.parsePast('Identifier')
+      syn.data.identifier = syn.parsePast('Identifier')
 
       syn.parsePastString('(')
 
       syn.parsePast('Whitespace')
 
-      syn.data.argSyns = []
+      syn.data.args = []
 
       while (syn.code[syn.i] && syn.code[syn.i] !== ')') {
         const argSyn = syn.parsePast('Expression')
-        syn.data.argSyns.push(argSyn)
+        syn.data.args.push(argSyn)
         syn.parsePast('Whitespace')
       }
 
@@ -69,20 +69,23 @@ const parser = Syn.makeParser({
 
     Program: syn => {
       syn.data._visual = {
-        statementSyns: 'synArray'
+        statements: 'synArray'
       }
 
-      syn.data.statementSyns = []
+      syn.data.statements = []
 
       while (syn.i < syn.code.length) {
         const statementSyn = syn.parsePast('FunctionCall')
-        syn.data.statementSyns.push(statementSyn)
+        syn.data.statements.push(statementSyn)
       }
     }
   }
 })
 
-const programSyn = parser('bar(baz foo(kaz))')
+const programSyn = parser(
+  'bar(baz foo(kaz))' +
+  '\nbar(baz(baz(baz(kaj))))'
+)
 console.log(programSyn)
 
 document.getElementById('target').appendChild(visualSyn(programSyn))

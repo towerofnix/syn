@@ -62,7 +62,7 @@ class Syn {
       try {
         syn = this.parsePast(attempt)
       } catch(e) {
-        console.log(e.message)
+        console.log('(Try to parse past) ' + e.message)
       }
 
       if (syn) {

@@ -1,8 +1,37 @@
-function visualSyn(syn) {
-  console.log('Visuaizing a ' + syn.type)
+const shortCode = function(code) {
+  const lines = code.split('\n')
+  const firstLine = lines[0]
+
+  let msg = ''
+
+  if (firstLine.length > 20) {
+    msg += firstLine.slice(0, 20)
+    msg += `...`
+  } else {
+    msg += firstLine
+  }
+
+  if (lines.length > 1) {
+    msg += ` (+ ${lines.length - 1} lines)`
+  }
+
+  return msg
+}
+
+function visualSyn(syn, meta={}) {
+  //console.log('Visuaizing a ' + syn.type, Object.keys(meta))
 
   const synEl = document.createElement('div')
   synEl.classList.add('syn-vis', 'syn')
+
+  synEl.title = syn.type
+
+  synEl.title += '\n\nCode: ' + shortCode(syn.synCode)
+
+  if (meta.ancesterLines) {
+    synEl.title += '\n\nStack: -------------\n'
+    synEl.title += meta.ancesterLines.join('\n')
+  }
 
   const typeEl = document.createElement('span')
   typeEl.classList.add('syn-vis', 'type')
@@ -39,11 +68,19 @@ function visualSyn(syn) {
         propEl.classList.add('syn-array')
 
         for (let childSyn of value) {
-          propEl.appendChild(visualSyn(childSyn))
+          propEl.appendChild(visualSyn(childSyn, Object.assign({}, meta, {
+            ancesterLines: (meta.ancesterLines || []).concat([
+              `${syn.type} -> ${prop} (array #${value.indexOf(childSyn)})`
+            ])
+          })))
         }
       } else if (displayType === 'syn') {
         propLabelEl.appendChild(document.createTextNode(' (Syn)'))
-        propEl.appendChild(visualSyn(value))
+        propEl.appendChild(visualSyn(value, Object.assign({}, meta, {
+          ancesterLines: (meta.ancesterLines || []).concat([
+            `${syn.type} -> ${prop}`
+          ])
+        })))
       } else if (displayType === 'string') {
         propEl.appendChild(document.createTextNode(`: ${value}`))
       }
