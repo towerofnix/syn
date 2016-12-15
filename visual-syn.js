@@ -36,7 +36,7 @@ function visualSyn(syn, meta={}) {
   }
 
   const typeEl = document.createElement('span')
-  typeEl.classList.add('syn-vis', 'type')
+  typeEl.classList.add('syn-vis', 'type-label')
   typeEl.appendChild(document.createTextNode(syn.type))
   synEl.appendChild(typeEl)
 

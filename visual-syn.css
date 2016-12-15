@@ -1,18 +1,29 @@
+.syn-vis {
+  font-family: 'Helvetica Neue';
+}
+
 .syn-vis.syn {
-  border-left: 1px dotted rgba(0, 0, 0, 0.3);
-  border-top: 1px dotted rgba(0, 0, 0, 0.3);
-  border-bottom: 1px dotted rgba(0, 0, 0, 0.3);
+  border-style: solid;
+  border-color: rgb(80, 180, 255);
+  border-width: 2px;
+  border-right-width: 0;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+
   padding: 5px;
   margin-bottom: 5px;
+
+  transition: all 0.2s;
 }
 
 .syn-vis.syn:not(:hover) {
-  background: rgba(0, 0, 0, 0.05);
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .syn-vis.syn:hover {
-  background: rgba(255, 0, 0, 0.1);
+  background-color: rgba(80, 80, 20, 0.1);
   border-color: rgb(255, 255, 0);
+  box-shadow: 0 0 5px rgba(80, 80, 0, 0.8);
 }
 
 .syn-vis.code {
@@ -28,6 +39,14 @@
   margin-left: 10px;
 }
 
+.syn-vis.type-label {
+  display: block;
+  margin-bottom: 4px;
+}
+
 .syn-vis.prop-label {
+  display: inline-block;
   font-weight: 800;
+  margin-bottom: 4px;
+  margin-top: 8px;
 }
