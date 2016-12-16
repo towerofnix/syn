@@ -91,8 +91,16 @@ const parser = Syn.makeParser({
 })
 
 const programSyn = parser(
-  'x(hi)'
+  'x(hi)' +
+  '\nabc(there)' +
+  '\nfoo(baz(kek) lel)' +
+  '\nkaj(' +
+  '\n  lel' +
+  '\n  whoa(huh)' +
+  '\n)'
 )
 console.log(programSyn)
 
 document.getElementById('target').appendChild(visualSyn(programSyn))
+
+document.getElementById('target').appendChild(visualSyn.textVis(programSyn))
