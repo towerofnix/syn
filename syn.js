@@ -71,7 +71,7 @@ class Syn {
       try {
         syn = this.parsePast(attempt)
       } catch(e) {
-        console.log('(tryToParsePast) ' + e.message)
+        //console.log('(tryToParsePast) ' + e.message)
       }
 
       if (syn) {
