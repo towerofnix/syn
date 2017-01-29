@@ -1,9 +1,25 @@
 class SynError extends Error {
   constructor(syn, msg) {
     let errorMsg = `Failed in ${syn.type}`
+
     if (msg) {
       errorMsg += ` (${msg})`
     }
+
+    // I'm not sure this actually works
+    let line = ''
+    let i
+
+    i = syn.i
+    while (syn.code[i] && syn.code[i] !== '\n') i--
+    line = syn.code.slice(i, syn.i)
+
+    i = syn.i
+    while (syn.code[i] && syn.code[i] !== '\n') i++
+    line += syn.code.slice(syn.i, i)
+
+    errorMsg += '\nLine: ' + line
+
     super(errorMsg)
 
     this.syn = syn
